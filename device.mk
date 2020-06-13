@@ -61,11 +61,43 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom
 
-# Init
+# Ramdisk
 PRODUCT_PACKAGES += \
-    init.mi_thermald.rc \
-    init.qcom.rc
-    
+    bluedut.sh \
+    bt_close.sh \
+    init.class_main.sh \
+    init.crda.sh \
+    init.mdm.sh \
+    init.mi.usb.sh \
+    init.qcom.class_core.sh \
+    init.qcom.coex.sh \
+    init.qcom.crashdata.sh \
+    init.qcom.early_boot.sh \
+    init.qcom.efs.sync.sh \
+    init.qcom.post_boot.sh \
+    init.qcom.sdio.sh \
+    init.qcom.sensors.sh \
+    init.qcom.sh \
+    init.qcom.usb.sh \
+    init.qti.chg_policy.sh \
+    init.qti.fm.sh \
+    init.qti.ims.sh \
+    loopback.sh \
+    myftm.agent.sh \
+    playback.sh \
+    qca6234-service.sh \
+    record.sh \
+    record_playback.sh \
+    wifitest.sh \
+    wifitest_close.sh \
+    init.msm.usb.configfs.rc \
+    init.qcom.factory.rc \
+    init.qcom.rc \
+    init.qcom.usb.rc \
+    init.target.rc \
+    fstab.qcom \
+    ueventd.qcom.rc
+
 # Idc
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/idc/uinput-fpc.idc:$(TARGET_COPY_OUT_SYSTEM)/usr/idc/uinput-fpc.idc \
