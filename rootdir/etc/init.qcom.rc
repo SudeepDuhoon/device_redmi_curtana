@@ -68,21 +68,21 @@ on init
     chown root system /sys/fs/cgroup/memory/bg/tasks
     chmod 0660 /sys/fs/cgroup/memory/bg/tasks
 
+    # Loading kernel modules in background
+    start insmod_sh
+
 on post-fs
     chmod 0755 /sys/kernel/debug/tracing
     chmod 0660 /sys/class/leds/red/brightness
     chown system system /sys/class/leds/red/brightness
 
 on early-boot
-    # set RLIMIT_MEMLOCK to 64MB
-    setrlimit 8 67108864 67108864
-    # Allow subsystem (modem etc) debugging
-    write /sys/kernel/debug/bootkpi/kpi_values "M - Start adsp"
-    write /sys/kernel/boot_adsp/boot 1
-    write /sys/kernel/boot_cdsp/boot 1
-    write /sys/devices/virtual/npu/msm_npu/boot 1
-    write /sys/kernel/boot_slpi/boot 1
-    write /sys/devices/virtual/cvp/cvp/boot 1
+    # Wait for insmod_sh to finish all modules
+    wait_for_prop vendor.all.modules.ready 1
+
+    # Wait for insmod_sh to finish all boot devices
+    wait_for_prop vendor.all.devices.ready 1
+
     exec u:r:qti_init_shell:s0 -- /vendor/bin/init.qcom.early_boot.sh
     exec u:r:qti_init_shell:s0 -- /vendor/bin/init.qti.can.sh
 
@@ -267,6 +267,9 @@ on boot
 
 # msm specific files that need to be created on /data
 on post-fs-data
+    # set RLIMIT_MEMLOCK to 64MB
+    setrlimit 8 67108864 67108864
+
     mkdir /data/vendor/misc 01771 system system
 
     # Create directory used for dump collection
@@ -956,7 +959,6 @@ on property:sys.qbcharger.enable=false
 service diag_mdlog_start /system/bin/diag_mdlog_system  -n 40 -s 500
     class late_start
     user shell
-#    group system oem_2901 sdcard_rw sdcard_r media_rw
     group system diag oem_2901 sdcard_rw sdcard_r media_rw
     disabled
     oneshot
@@ -965,7 +967,6 @@ service diag_mdlog_start /system/bin/diag_mdlog_system  -n 40 -s 500
 service diag_mdlog_stop /system/bin/diag_mdlog_system -k
     class late_start
     user shell
-#    group system oem_2901 sdcard_rw sdcard_r media_rw
     group system diag oem_2901 sdcard_rw sdcard_r media_rw
     disabled
     oneshot
@@ -988,6 +989,13 @@ service vm_bms /vendor/bin/vm_bms
     user root
     group root
     disabled
+
+service insmod_sh /vendor/bin/init.insmod.sh /vendor/etc/init.insmod.cfg
+    class main
+    user root
+    group root system
+    disabled
+    oneshot
 
 service vendor.msm_irqbalance /vendor/bin/msm_irqbalance -f /system/vendor/etc/msm_irqbalance.conf
     class core
