@@ -17,6 +17,9 @@ $(call inherit-product, vendor/du/config/common_full_phone.mk)
 # Boot Animation
 TARGET_BOOT_ANIMATION_RES := 1080
 
+# PixelGApps
+$(call inherit-product-if-exists, vendor/pixelgapps/pixel-gapps.mk)
+
 # Device identifier. This must come after all inclusions.
 PRODUCT_NAME := du_curtana
 PRODUCT_DEVICE := curtana
